@@ -1,3 +1,2 @@
 # technica2022
-hello
-ratat
+hello lovelies <3
