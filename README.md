@@ -1,2 +1,3 @@
 # technica2022
-hello
+hello lovelies <3
+mwah mwah mwah
