@@ -17,9 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('create_event/', include('create_event.urls')),
-    path('create_invoice/', include('create_invoice.urls')),
-    path('add_purchase/', include('add_purchase.urls')),
+    path('invoice/', include('invoice.urls')),
     path('', include('home.urls')),
     path("admin/", admin.site.urls),
 ]

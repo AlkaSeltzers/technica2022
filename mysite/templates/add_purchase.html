@@ -1,0 +1,11 @@
+
+
+<a>Add Puchase Page</a>
+
+
+<form method="POST" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+    <button type="submit">Add Purchase!</button>
+</form>
