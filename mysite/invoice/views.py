@@ -163,7 +163,7 @@ def add_purchase_pic(request, Event_ID):
 
             receipt_total = 0
             url = 'https://app.nanonets.com/api/v2/OCR/Model/982478f6-90c5-499e-9b48-eeb6e426799f/LabelFile/?async=false'
-            data = {'file': open('receipt.png', 'rb')}
+            data = {'file': open(image, 'rb')}
 
             response = requests.post(url, auth=requests.auth.HTTPBasicAuth('CmA1d2TLu4eaJ2vq2QRTVP6TzvMrub0W', ''), files=data)
 
