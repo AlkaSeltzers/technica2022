@@ -25,6 +25,14 @@
     color: white;
 }
 
+
+#text {
+    align-self: center;
+    font-size: calc(3px + 2vmin);
+    color: white;
+    padding:10px;
+}
+
 .body-bg {
     background-image:url("images/main.jpg");
     min-height: 60%;
