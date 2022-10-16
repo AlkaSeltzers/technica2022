@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.template import loader
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import requests
 
 from .forms import ContactForm, EventIDForm, SetUpIDForm, Input_Picture, Input_Number, EventIDFormPicture
 
@@ -160,11 +161,23 @@ def add_purchase_pic(request, Event_ID):
             #query the sql with event ID and then add the other data to the database
 
 
+            receipt_total = 0
+            url = 'https://app.nanonets.com/api/v2/OCR/Model/982478f6-90c5-499e-9b48-eeb6e426799f/LabelFile/?async=false'
+            data = {'file': open('receipt.png', 'rb')}
+
+            response = requests.post(url, auth=requests.auth.HTTPBasicAuth('CmA1d2TLu4eaJ2vq2QRTVP6TzvMrub0W', ''), files=data)
+
+            objects = response.json()['result'][0]['prediction']
+            for obj in objects:
+                if obj['label'] == 'Total_Amount':
+                    receipt_total = int(obj['ocr_text'])
+
 
             return redirect(url)
             #return render(request, 'index.html', {'form': form, 'img_obj': img_obj})
         return render(request, 'upload_picture.html', {'form': form})
     else:
         form = Input_Picture()
+        
         return render(request, 'upload_picture.html', {'form': form})
 
