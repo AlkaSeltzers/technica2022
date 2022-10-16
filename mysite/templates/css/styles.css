@@ -1,0 +1,119 @@
+* {
+    padding: 0;
+    margin: 0;
+  }
+  .top-nav {
+    min-height: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    vertical-align: center;
+    font-size: calc(10px + 2vmin);
+    font-family: "Baskerville";
+    font-style: "bold";
+}
+
+.top-nav-right {
+    min-height: 15%;
+    display: flex;
+    flex-direction:row;
+}
+
+.menu {
+    align-self: center;
+    font-size: calc(3px + 2vmin);
+    color: white;
+}
+
+.body-bg {
+    background-image:url("images/main.jpg");
+    min-height: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    align-items: center;
+    font-size: calc(10px + 2vmin);
+    font-family: "Baskerville";
+    font-style: "bold";
+    margin: 30px;
+}
+
+.box-bg{
+    background-color: #ab83d6;
+    border-radius: 20px;
+    padding: 50px;
+    font-size: 30px;
+    margin: 50px;
+    opacity:90%;
+    color:#307579;
+    display: flex;
+    flex-direction: row;
+}
+
+.box-about{
+    background-color: white;
+    border-radius: 20px;
+    width: 50%;
+    height: 30%;
+    padding: 50px;
+    font-size: 18px;
+    line-height: 30px;
+    margin: 20px;
+    opacity:80%;
+    color:#307579;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Baskerville";
+    font-style:"bold";
+}
+
+#heading {
+    color: white;
+    text-align:center;
+    font-family: "Baskerville";
+    font-style:"bold";
+    font-size:80px;
+    padding-top:100px;
+}
+
+#bodybtn {
+    background-color:#307579;
+    border-color:#307579;
+    color: white;
+    border-radius: 20%;
+    padding: 15px;
+    margin-left: 10px;
+
+}
+
+a:link {
+    color: white;
+    padding:10px;
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+  a:visited {
+    color: white;
+    padding:10px;
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: 307579;
+    padding:10px;
+    background-color: white;
+    opacity: 70%;
+  }
+
+input, select, textarea{
+    color: gray;
+    font-size: 30px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    text-align:center;
+}
