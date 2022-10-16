@@ -1,24 +1,28 @@
+from asyncio import events
 from django.shortcuts import render, HttpResponse, redirect
 from django.template import loader
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from invoice.models import Transactions, People
+from django_pandas.io import read_frame
+import pandas as pd
 
 from .forms import ContactForm, EventIDForm, SetUpIDForm, Input_Picture, Input_Number, EventIDFormPicture
 
 
 def create_event(request):
-    
+
     if request.method == "POST":
-        
-        #query sql and make a new group id
-
-
         form = SetUpIDForm(request.POST)
         if form.is_valid():
+            ids = list(Transactions.objects.all().values_list('Event_ID'))
             random_event_number = 1
+            if len(ids) != 0:
+                random_event_number = sorted(ids)[-1] + 1
             lst_nm = form.cleaned_data['list_of_names']
-            # split list of names by string then
-            # query sql with group id and add names
+            lst_nm = lst_nm.split(",")
+            for i in lst_nm:
+                People.objects.create(Event_ID=random_event_number, Name=i)
 
             url = '/invoice/total_transactions/'+ str(random_event_number) +'/'
             return redirect(url)
@@ -43,22 +47,67 @@ def create_invoice(request):
         form = EventIDForm()
         return render( request, 'get_event_id.html', {'form': form})
 
+def process(Event_ID):
+    qs = Transactions.objects.all()
+    transac = read_frame(qs)
+    pplQS = People.objects.all()
+    ppl = read_frame(pplQS)
+    names = pd.Series(ppl[ppl['Event_ID'] == Event_ID]['Name']).to_list()
+    transac = transac[transac['Event_ID'] == Event_ID]
+    transac['Person_ID'] = transac['Person_ID'].apply(lambda x: names.index(x))
+    transac['Owed_By'] = transac['Owed_By'].apply(lambda x: [names.index(i) for i in x.split(',')])
+    arr = [0] * len(names)
+    def group (row):
+        arr[row['Person_ID']] += row['Payment']
+        for i in row['Owed_By']:
+            arr[i] -= (row['Payment']/len(row['Owed_By']))
+
+    transac = transac.apply(lambda row: group(row), axis=1)
+    payments = [[0 for i in arr] for j in arr]
+    for i in range(len(arr)):
+        if arr[i] < 0:
+            for j in range(len(arr)):
+                if arr[j] > -1 * arr[i]:
+                    payments[i][j] = -1*arr[i]
+                    arr[i] = 0
+                    arr[j] += arr[i]
+                    break;
+            if arr[i] != 0:
+                for j in range(len(arr)):
+                    if arr[j] > 0:
+                        if arr[i] + arr[j] > 0:
+                            payments[i][j] = -1*arr[i]
+                            arr[i] = 0
+                            arr[j] += arr[i]
+                            break;
+                        else:
+                            payments[i][j] = arr[j]
+                            arr[j] = 0
+                            arr[i] += arr[j]
+    
+    result = ""
+
+    for i, val in enumerate(payments):
+        for j, val2 in enumerate(val):
+            if val2 != 0:
+                result += str(names[i]) + " Owes " + str(names[j]) + " $" + str(val2) + '\n'
+    return result
 
 
 def create_invoice_with_group(request, Event_ID):
 
-    template = loader.get_template('throwaway.html')  
+    template = loader.get_template('throwaway.html')
     context = {
     }
-    # query the sql and then do the algorithm and return the invoice
+    
+    result = process(Event_ID)
 
-    return HttpResponse(template.render(context, request)) 
+    return HttpResponse(template.render(context, request))
 
 
 def add_purchase(request):
 
     if request.method == "POST":
-        random_event_number = 1
         form = EventIDFormPicture(request.POST)
         if form.is_valid():
             lst_nm = form.cleaned_data['event_id']
@@ -79,15 +128,12 @@ def add_purchase(request):
 def add_purchase_with_group(request, Event_ID):
 
     if request.method == "POST":
-        random_event_number = 1
         form = Input_Number(request.POST)
         if form.is_valid():
             money_inputted = form.cleaned_data['amount_id']
             people_added = form.cleaned_data['list_of_users']
             user = form.cleaned_data['user']
-            #query the sql with event ID and then add the other data to the database
-
-
+            Transactions.objects.create(Event_ID=Event_ID, Person_ID=user, Payment=money_inputted, Owed_By=people_added)
             url = '/invoice/total_transactions/' + str(Event_ID) + '/'
             return redirect(url)
         return render( request, 'get_event_id.html', {'form': form} )
@@ -111,9 +157,8 @@ def total_transactions(request):
         return render( request, 'get_event_id.html', {'form': form})
 
 
-def total_transactions_with_group(request, Event_ID):
 
-    # query with event id and put it in 
+def total_transactions_with_group(request, Event_ID):
 
     return render(request, 'throwaway.html', {'id_event': Event_ID})
 
@@ -167,4 +212,3 @@ def add_purchase_pic(request, Event_ID):
     else:
         form = Input_Picture()
         return render(request, 'upload_picture.html', {'form': form})
-
