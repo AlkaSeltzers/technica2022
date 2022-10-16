@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from invoice.models import Transactions, People
 from django_pandas.io import read_frame
 import pandas as pd
+import requests
 
 from .forms import ContactForm, EventIDForm, SetUpIDForm, Input_Picture, Input_Number, EventIDFormPicture
 
@@ -84,7 +85,7 @@ def process(Event_ID):
                             payments[i][j] = arr[j]
                             arr[j] = 0
                             arr[i] += arr[j]
-    
+
     result = ""
 
     for i, val in enumerate(payments):
@@ -99,7 +100,7 @@ def create_invoice_with_group(request, Event_ID):
     template = loader.get_template('throwaway.html')
     context = {
     }
-    
+
     result = process(Event_ID)
 
     return HttpResponse(template.render(context, request))
@@ -205,10 +206,22 @@ def add_purchase_pic(request, Event_ID):
             #query the sql with event ID and then add the other data to the database
 
 
+            receipt_total = 0
+            url = 'https://app.nanonets.com/api/v2/OCR/Model/982478f6-90c5-499e-9b48-eeb6e426799f/LabelFile/?async=false'
+            data = {'file': open(image, 'rb')}
+
+            response = requests.post(url, auth=requests.auth.HTTPBasicAuth('CmA1d2TLu4eaJ2vq2QRTVP6TzvMrub0W', ''), files=data)
+
+            objects = response.json()['result'][0]['prediction']
+            for obj in objects:
+                if obj['label'] == 'Total_Amount':
+                    receipt_total = int(obj['ocr_text'])
+
 
             return redirect(url)
             #return render(request, 'index.html', {'form': form, 'img_obj': img_obj})
         return render(request, 'upload_picture.html', {'form': form})
     else:
         form = Input_Picture()
+
         return render(request, 'upload_picture.html', {'form': form})

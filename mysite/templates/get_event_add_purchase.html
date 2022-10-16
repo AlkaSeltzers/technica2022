@@ -1,6 +1,33 @@
-<form method="POST" action="">
-    {% csrf_token %}
-    {{ form.as_p }}
-    
-    <button type="submit">What is your Event ID?</button>
-</form>
+<html>
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+<header>
+    <div class="top-nav">
+        <div class="top-nav-right">
+            <a href="invoice/home">Home</a>
+            <a href="invoice/add_purchase">Add Purchase</a>
+            <a href="invoice/create_event">Create Event</a>
+            <a href="invoice/create_invoice">Create Invoice</a>
+            <a href="invoice/total_transactions">View Transactions</a>
+        </div>
+            
+    </div>
+</header>
+
+<body>
+    <style>
+        body {
+          background-image: url('css/background.jpg');
+          background-size : 100% auto
+        }
+    </style>
+
+    <a>Add Puchase Page</a>
+    <form  method="POST" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit">What is your Event ID?</button>
+    </form>
+    <p id="text">Note: When typing in lists, separate each value with a single comma and no spaces. </p>
+</body>
+</html>
